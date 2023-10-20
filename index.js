@@ -126,6 +126,41 @@ async function run() {
       res.send(result);
     })
 
+    //! Getting product data for update
+
+    app.get("/update/:productDetailId",async(req,res)=>{
+      const  productId = req.params.productDetailId;
+      console.log(productId);
+      const query = {_id: new ObjectId(productId)}
+      const result = await productCollection.findOne(query);
+      res.send(user);
+    })
+
+    // ! Update product data
+
+    app.put('/addproduct/:productDetailId',async(req,res)=>{
+      const id = req.params.productDetailId;
+      const product = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert:true}
+      const updatedProduct = {
+        $set:{
+            photo : product.photo,
+            name : product.name,
+            type : product.type,
+            brand : product.brand,
+            featured : product.featured,
+            price : product.price,
+            rating : product.rating,
+            warrenty : product.warrenty,
+            description : product.description,
+        }
+      }
+      const result = await productCollection.updateOne(filter,updatedProduct,options)
+      res.send(result);
+    })
+
+
 
     // > User Cart Collection Operation
     // ! Save Product inside from add to cart button on product details page
@@ -138,15 +173,17 @@ async function run() {
     // ! Get user cart for mycart page
     app.post("/mycart",async(req,res)=>{
       const currentUser = req.body;
+      console.log(currentUser);
       const query = { email : currentUser.email }
-      const userCart = userCartCollection.find(query);
+      const userCart = await userCartCollection.find(query);
       const result = await userCart.toArray();
+      console.log(result);
       res.send(result);
     })
-
+ 
     // ! Delete product from user cart
-    app.delete("/mycart/:currentProductID",async(req,res)=>{
-      const currentId = req.params.currentProductID;
+    app.delete("/mycart/:productId",async(req,res)=>{
+      const currentId = req.params.productId;
       const query = {_id: new ObjectId(currentId)}
       const result = await userCartCollection.deleteOne(query);
       res.send(result);
