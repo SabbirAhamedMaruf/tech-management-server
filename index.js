@@ -109,7 +109,7 @@ async function run() {
     });
 
     // ! Fetching brand based product for products page
-    app.get("/:brandname",async(req,res)=>{
+    app.get("/brand/:brandname",async(req,res)=>{
       const currentBrandUrl = req.params.brandname;
       const query = {brand : `${currentBrandUrl}`};
       const brandProducts = productCollection.find(query);
@@ -118,7 +118,7 @@ async function run() {
     })
 
     // ! Fetching product details data for product details page
-    app.get("/:brandname/:productDetailId",async(req,res)=>{
+    app.get("/brand/:brandname/:productDetailId",async(req,res)=>{
       const currentProductId = req.params.productDetailId;
       const query = {_id : new ObjectId(currentProductId)};
       const currentProduct = productCollection.find(query);
@@ -128,7 +128,7 @@ async function run() {
 
     //! Getting product data for update
 
-    app.get("/update/:productDetailId",async(req,res)=>{
+    app.get("/brand/update/:productDetailId",async(req,res)=>{
       const  productId = req.params.productDetailId;
       console.log(productId);
       const query = {_id: new ObjectId(productId)}
@@ -164,7 +164,7 @@ async function run() {
 
     // > User Cart Collection Operation
     // ! Save Product inside from add to cart button on product details page
-    app.post("/:brandname/:productDetailId",async(req,res)=>{
+    app.post("/brand/:brandname/:productDetailId",async(req,res)=>{
       const currentUserProduct = req.body;
       const result = await userCartCollection.insertOne(currentUserProduct);
       res.send(result);
