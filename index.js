@@ -144,6 +144,14 @@ async function run() {
       res.send(result);
     })
 
+    // ! Delete product from user cart
+    app.delete("/mycart/:currentProductID",async(req,res)=>{
+      const currentId = req.params.currentProductID;
+      const query = {_id: new ObjectId(currentId)}
+      const result = await userCartCollection.deleteOne(query);
+      res.send(result);
+    })
+
 
   } finally {
   }
