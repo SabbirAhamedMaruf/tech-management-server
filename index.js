@@ -13,7 +13,7 @@ app.use(express.json());
 require("dotenv").config();
 
 // MongoDB config
-const { MongoClient, ServerApiVersion,ObjectId } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.TECH_HEAVEN_USER}:${process.env.TECH_HEAVEN_PASS}@cluster0.pzharqa.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -34,16 +34,12 @@ async function run() {
     const productCollection = database.collection("productCollection");
     const userCartCollection = database.collection("userCartCollection");
 
-    // TODO need to delete this line when i wanted to deploy in vercel
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
-
-
-
 
     //> Brand Collection Operation
     //! Fetching data for add product page (Brand)
@@ -67,10 +63,6 @@ async function run() {
       res.send(result);
     });
 
-
-
-
-
     //> Product Type Collection Operation
     //! Inserting data from client addtype
     app.post("/addtype", async (req, res) => {
@@ -87,10 +79,6 @@ async function run() {
       const result = await searchedProductType.toArray();
       res.send(result);
     });
-
-
-
-
 
     //> Product Collection Operation
     //! Inserting product into database
@@ -109,95 +97,91 @@ async function run() {
     });
 
     // ! Fetching brand based product for products page
-    app.get("/brand/:brandname",async(req,res)=>{
+    app.get("/brand/:brandname", async (req, res) => {
       const currentBrandUrl = req.params.brandname;
-      const query = {brand : `${currentBrandUrl}`};
+      const query = { brand: `${currentBrandUrl}` };
       const brandProducts = productCollection.find(query);
       const result = await brandProducts.toArray();
       res.send(result);
-    })
+    });
 
     // ! Fetching product details data for product details page
-    app.get("/brand/:brandname/:productDetailId",async(req,res)=>{
+    app.get("/brand/:brandname/:productDetailId", async (req, res) => {
       const currentProductId = req.params.productDetailId;
-      const query = {_id : new ObjectId(currentProductId)};
+      const query = { _id: new ObjectId(currentProductId) };
       const currentProduct = productCollection.find(query);
       const result = await currentProduct.toArray();
       res.send(result);
-    })
+    });
 
     //! Getting product data for update
 
-    app.get("/brand/update/:productDetailId",async(req,res)=>{
-      const  productId = req.params.productDetailId;
+    app.get("/brand/update/:productDetailId", async (req, res) => {
+      const productId = req.params.productDetailId;
       console.log(productId);
-      const query = {_id: new ObjectId(productId)}
+      const query = { _id: new ObjectId(productId) };
       const result = await productCollection.findOne(query);
       res.send(user);
-    })
+    });
 
     // ! Update product data
 
-    app.put('/addproduct/:productDetailId',async(req,res)=>{
+    app.put("/addproduct/:productDetailId", async (req, res) => {
       const id = req.params.productDetailId;
       const product = req.body;
-      const filter = {_id: new ObjectId(id)}
-      const options = {upsert:true}
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
       const updatedProduct = {
-        $set:{
-            photo : product.photo,
-            name : product.name,
-            type : product.type,
-            brand : product.brand,
-            featured : product.featured,
-            price : product.price,
-            rating : product.rating,
-            warrenty : product.warrenty,
-            description : product.description,
-        }
-      }
-      const result = await productCollection.updateOne(filter,updatedProduct,options)
+        $set: {
+          photo: product.photo,
+          name: product.name,
+          type: product.type,
+          brand: product.brand,
+          featured: product.featured,
+          price: product.price,
+          rating: product.rating,
+          warrenty: product.warrenty,
+          description: product.description,
+        },
+      };
+      const result = await productCollection.updateOne(
+        filter,
+        updatedProduct,
+        options
+      );
       res.send(result);
-    })
-
-
+    });
 
     // > User Cart Collection Operation
     // ! Save Product inside from add to cart button on product details page
-    app.post("/brand/:brandname/:productDetailId",async(req,res)=>{
+    app.post("/brand/:brandname/:productDetailId", async (req, res) => {
       const currentUserProduct = req.body;
       const result = await userCartCollection.insertOne(currentUserProduct);
       res.send(result);
-    })
+    });
 
     // ! Get user cart for mycart page
-    app.post("/mycart",async(req,res)=>{
+    app.post("/mycart", async (req, res) => {
       const currentUser = req.body;
       console.log(currentUser);
-      const query = { email : currentUser.email }
+      const query = { email: currentUser.email };
       const userCart = await userCartCollection.find(query);
       const result = await userCart.toArray();
       console.log(result);
       res.send(result);
-    })
- 
+    });
+
     // ! Delete product from user cart
-    app.delete("/mycart/:productId",async(req,res)=>{
+    app.delete("/mycart/:productId", async (req, res) => {
       const currentId = req.params.productId;
-      const query = {_id: new ObjectId(currentId)}
+      const query = { _id: new ObjectId(currentId) };
       const result = await userCartCollection.deleteOne(query);
       res.send(result);
-    })
-
-
+    });
   } finally {
   }
 }
 run().catch(console.dir);
-
-
-
-
 
 // Server config
 app.get("/", (req, res) => {
